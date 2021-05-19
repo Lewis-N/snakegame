@@ -2,7 +2,7 @@
 // Created by Lewis-N on 2021/5/12.
 //
 
-//@±íÉßÍ·£¬*±íÉßÉíÌå£¬#±íÊ¾Ê³Îï£¬=ºÍ|±íÊ¾Ç½
+//@è¡¨è›‡å¤´ï¼Œ*è¡¨è›‡èº«ä½“ï¼Œ#è¡¨ç¤ºé£Ÿç‰©ï¼Œ=å’Œ|è¡¨ç¤ºå¢™
 
 #include <iostream>
 #include "game.h"
@@ -26,6 +26,6 @@ int main() {
     system("cls");
     printmap();
     setpos(col / 2, row / 2);
-    cout << "ÔÙ¼û";
+    cout << "å†è§";
     return 0;
 }

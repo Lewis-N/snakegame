@@ -11,10 +11,10 @@
 #include <windows.h>
 #include "console.h"
 
-const int scoreup = 10;/*Ã¿¸ö½Úµã10·Ö*/
+const int scoreup = 10;/*æ¯ä¸ªèŠ‚ç‚¹10åˆ†*/
 
 
-const int def = 300;/*Ä¬ÈÏÄÑ¶È*/
+const int def = 300;/*é»˜è®¤éš¾åº¦*/
 
 
 using std::cin;
@@ -46,11 +46,11 @@ snake* init() {
 void move(snake* head, char op, int count) {
     snake* ptr = head->next;
     if (ptr->next != NULL) {
-        move(ptr, op, count + 1);/*µÝ¹éÀ´ÊµÏÖÕÒµ½ÉßÎ²½Úµã*/
+        move(ptr, op, count + 1);/*é€’å½’æ¥å®žçŽ°æ‰¾åˆ°è›‡å°¾èŠ‚ç‚¹*/
     }
     ptr->x = head->x;
     ptr->y = head->y;
-    if (count == 0) {/*0±íÊ¾Í·½Úµã*/
+    if (count == 0) {/*0è¡¨ç¤ºå¤´èŠ‚ç‚¹*/
         switch (op) {
         case 'w':
             head->y--;
@@ -86,7 +86,6 @@ void printmap() {
         }
         cout << endl;
     }
-
     return;
 }
 
@@ -109,14 +108,14 @@ void printhelp() {
     setpos(col + 10, 5);
     cout << "Help" << endl;
     setpos(col + 10, 6);
-    cout << "Ê¹ÓÃw,a,s,d¿ØÖÆÉßµÄÒÆ¶¯";
+    cout << "ä½¿ç”¨w,a,s,dæŽ§åˆ¶è›‡çš„ç§»åŠ¨";
     setpos(0, row + 1);
     setpos(col + 10, 7);
-    cout << "Ê¹ÓÃ+/-¸Ä±äËÙ¶È,µÃ·ÖÊý¸úËÙ¶ÈÓÐ¹Ø£¬¿Õ¸ñÔÝÍ£/»Ö¸´ÓÎÏ·";
+    cout << "ä½¿ç”¨+/-æ”¹å˜é€Ÿåº¦,å¾—åˆ†æ•°è·Ÿé€Ÿåº¦æœ‰å…³ï¼Œç©ºæ ¼æš‚åœ/æ¢å¤æ¸¸æˆ";
     setpos(col + 10, 8);
-    cout << "½ðÉ«Ê³ÎïËæ»úÉú³É£¬ÆäÓÐË«±¶¼Ó·Ö";
+    cout << "é‡‘è‰²é£Ÿç‰©éšæœºç”Ÿæˆï¼Œå…¶æœ‰åŒå€åŠ åˆ†";
     setpos(col + 10, 9);
-    cout << "ÔÝÍ£Ê±°´ÏÂqÀ´ÍË³ö²¢±£´æÓÎÏ·";
+    cout << "æš‚åœæ—¶æŒ‰ä¸‹qæ¥é€€å‡ºå¹¶ä¿å­˜æ¸¸æˆ";
     return;
 }
 
@@ -142,7 +141,7 @@ void printsnake(snake* head, int diff) {
 }
 
 food generatefood(snake* head) {
-    srand((unsigned)time(NULL));/*Ë¢ÐÂËæ»úÊý³Ø*/
+    srand((unsigned)time(NULL));/*åˆ·æ–°éšæœºæ•°æ± */
     snake* ptr = head;
     food f;
     do {
@@ -175,6 +174,7 @@ food generatefood(snake* head) {
         setcolor(7);
         cout << "#";
     }
+    setpos(0, 0);
     return f;
 }
 
@@ -190,19 +190,15 @@ bool eat(snake* head, food f) {
 
 void gamestart(snake* head, int target) {
     int score = 0;
-    int diff = 0;/*Ä¬ÈÏÄÑ¶È*/
+    int diff = 0;/*é»˜è®¤éš¾åº¦*/
     printmap();
     printhelp();
     setpos(col + 10, 10);
-    cout << "µ±Ç°µÃ·Ö:" << score;
+    cout << "å½“å‰å¾—åˆ†:" << score;
     if (target) {
         setpos(col + 10, 11);
-        cout << "Ä¿±ê·ÖÊý:" << target;
+        cout << "ç›®æ ‡åˆ†æ•°:" << target;
     }
-    HANDLE fd = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO cinfo;
-    cinfo.bVisible = 0;
-    cinfo.dwSize = 1;/*Òþ²Ø¿ØÖÆÌ¨¹â±ê*/
     char op1;
     food f, hf;
     bool flag = false;
@@ -215,13 +211,17 @@ void gamestart(snake* head, int target) {
         }
         printsnake(head, diff);
         if (kbhit()) {
+            HANDLE fd = GetStdHandle(STD_OUTPUT_HANDLE);
+            CONSOLE_CURSOR_INFO cinfo;
+            cinfo.bVisible = 0;
+            cinfo.dwSize = 1;/*éšè—æŽ§åˆ¶å°å…‰æ ‡*/
             op1 = getch();
             if (op1 >= 65 && op1 <= 90) {
                 op1 ^= 32;
             }
             if (op1 == ' ') {
                 if (pausegame() == 1) {
-                    if (score > 0) {
+                    if (score) {
                         savescore(score);
                     }
                     return;
@@ -238,7 +238,7 @@ void gamestart(snake* head, int target) {
                 }
             }
         }
-        if ((op1 == 'w' && head->op == 's') || (op1 == 's' && head->op == 'w') || (op1 == 'a' && head->op == 'd') || op1 == 'd' && head->op == 'a') {/*·Ç·¨ÊäÈëµÄ´¦Àí*/
+        if ((op1 == 'w' && head->op == 's') || (op1 == 's' && head->op == 'w') || (op1 == 'a' && head->op == 'd') || op1 == 'd' && head->op == 'a') {/*éžæ³•è¾“å…¥çš„å¤„ç†*/
             op1 = head->op;
         }
         else if (op1 == 'w' || op1 == 'a' || op1 == 's' || op1 == 'd') {
@@ -255,7 +255,7 @@ void gamestart(snake* head, int target) {
             else { score += diff * scoreup; }
             f = generatefood(head);
             setpos(col + 10, 10);
-            cout << "µ±Ç°µÃ·Ö:" << score;
+            cout << "å½“å‰å¾—åˆ†:" << score;
         }
         autoacc(score, diff);
     }
@@ -294,13 +294,13 @@ bool Isfail(snake* head) {
 
 void addsnake(snake* head) {
     snake* ptr = head->next;
-    while (ptr->next != NULL) {/*¶¨Î»ÉßÎ²*/
+    while (ptr->next != NULL) {/*å®šä½è›‡å°¾*/
         ptr = ptr->next;
     }
     snake* newsnake = (snake*)malloc(sizeof(snake));
     ptr->next = newsnake;
     newsnake->next = NULL;
-    return;/*newsnake»áÔÚmoveÖÐ±»¸üÐÂ*/
+    return;/*newsnakeä¼šåœ¨moveä¸­è¢«æ›´æ–°*/
 }
 
 int accelerate(int diff) {
@@ -321,11 +321,11 @@ int pausegame() {
 void printfail(snake* head, int target) {
     cleanhelp();
     setpos(col / 2 - 10, row / 2);
-    cout << "ÄãÊ§°ÜÁË,ÊÇ·ñÔÙÀ´Ò»¾Ö";
+    cout << "ä½ å¤±è´¥äº†,æ˜¯å¦å†æ¥ä¸€å±€";
     setpos(col / 2 - 5, row / 2 + 2);
-    cout << "[ ]ÔÙÀ´Ò»°Ñ";
+    cout << "[ ]å†æ¥ä¸€æŠŠ";
     setpos(col / 2 - 5, row / 2 + 3);
-    cout << "[ ]²»ÁË²»ÁË";
+    cout << "[ ]ä¸äº†ä¸äº†";
     char op = selectfail();
     if (op == 'y') {
         quitgame(head);

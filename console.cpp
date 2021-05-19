@@ -8,20 +8,20 @@
 #include <iomanip>
 #include <cstdlib>
 #include <iostream>
-#include <windows.h>/*ĞèÒªÊ¹ÓÃcoord£¬handle*/
+#include <windows.h>/*éœ€è¦ä½¿ç”¨coordï¼Œhandle*/
 #include <ctime>
 #include <conio.h>
 
 using namespace std;
 
-void setpos(short x, short y) {//ÉèÖÃ¹â±êÎ»ÖÃ£¬ÓÃÓÚ´òÓ¡Éß
+void setpos(short x, short y) {//è®¾ç½®å…‰æ ‡ä½ç½®ï¼Œç”¨äºæ‰“å°è›‡
     COORD pos = { x,y };
     HANDLE position = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleCursorPosition(position, pos);
     return;
 }
 
-void setcolor(char color) {//ÉèÖÃ´òÓ¡ÑÕÉ«£¬ÓÃÓÚ´òÓ¡²»Í¬ÑÕÉ«µÄÊ³Îï
+void setcolor(char color) {//è®¾ç½®æ‰“å°é¢œè‰²ï¼Œç”¨äºæ‰“å°ä¸åŒé¢œè‰²çš„é£Ÿç‰©
     HANDLE Color = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(Color, color);
     return;
@@ -33,15 +33,18 @@ bool cmp(struct data s1, struct data s2) {
 }
 
 void savescore(int score1) {
-    struct data* s = (struct data*)malloc(sizeof(struct data));//ÕâÀïÓÃmallocÊÇÎªÁËÏÂÃæÄÜÒ»´ÎĞÔĞ´ÈëÒ»Õû¸ö½á¹¹Ìå
+    struct data* s = (struct data*)malloc(sizeof(struct data));//è¿™é‡Œç”¨mallocæ˜¯ä¸ºäº†ä¸‹é¢èƒ½ä¸€æ¬¡æ€§å†™å…¥ä¸€æ•´ä¸ªç»“æ„ä½“
     s->score = score1;
+    setpos(col / 2 - 10, row / 2);
+    cout << "è¯·è¾“å…¥ç”¨æˆ·å:";
+    cin >> s->username;
     time_t t;
     struct tm* ti;
     time(&t);
     ti = localtime(&t);
-    FILE* p = fopen("data.txt", "ab");
+    FILE* p = fopen(filename, "ab");
     if (p == NULL) {
-        p = fopen("data.txt", "wb");
+        p = fopen(filename, "wb");
     }
     s->year = ti->tm_year;
     s->month = ti->tm_mon;
@@ -52,6 +55,8 @@ void savescore(int score1) {
     fwrite(s, sizeof(struct data), 1, p);
     fclose(p);
     free(s);
+    system("cls");
+    printmap();
     return;
 }
 
@@ -59,25 +64,26 @@ int menu() {
     printmap();
     printconsolehelp();
     setpos(col / 2 - 5, row / 2 - 2);
-    std::cout << "[ ]¿ªÊ¼ÓÎÏ·" << std::endl;
+    cout << "[ ]å¼€å§‹æ¸¸æˆ" << endl;
     setpos(col / 2 - 5, row / 2 - 1);
-    std::cout << "[ ]²é¿´ÅÅĞĞ°ñ" << std::endl;
+    cout << "[ ]æŸ¥çœ‹æ’è¡Œæ¦œ" << endl;
     setpos(col / 2 - 5, row / 2);
-    std::cout << "[ ]ÍË³ö" << std::endl;
+    cout << "[ ]é€€å‡º" << endl;
     return select();
 }
 
 
 int showranklist() {
-    int flag = 0;//0±íÊ¾Ñ¡Ôñ£¬1±íÊ¾ÅĞ¶Ï
+    int flag = 0;//0è¡¨ç¤ºé€‰æ‹©ï¼Œ1è¡¨ç¤ºåˆ¤æ–­
     struct data s[maxlen];
     struct data* ptr = s;
     int i = 0;
-    FILE* p = fopen("data.txt", "rb");
+    FILE* p = fopen(filename, "rb");
     if (p == NULL) {
         system("cls");
         setpos(40, 7);
-        std::cout << "ÎŞ·¨²éÑ¯µ½¼ÇÂ¼£¬ÄúÓ¦¸ÃÊÇµÚÒ»¸öÓÃ»§,°´ÈÎÒâ¼üÍË³ö ";
+        cout << "æ— æ³•æŸ¥è¯¢åˆ°è®°å½•ï¼Œæ‚¨åº”è¯¥æ˜¯ç¬¬ä¸€ä¸ªç”¨æˆ·,æŒ‰ä»»æ„é”®é€€å‡º ";
+        setpos(40, 8);
         system("pause");
         return 0;
     }
@@ -90,10 +96,10 @@ int showranklist() {
     }
     system("cls");
     setpos(52, 3);
-    cout << "ÅÅĞĞ°ñ";
+    cout << "æ’è¡Œæ¦œ";
     for (int j = 0; j < i - 1; j++) {
         setpos(40, j * 2 + 7);
-        cout << "[ ]" << s[j].score << "\t";
+        cout << "[ ]" << s[j].username << "\t" << s[j].score << "\t";
         cout << s[j].year + 1900 << "/" << setw(2) << setfill('0') << s[j].month + 1 << "/" << setw(2) << setfill('0') << s[j].day << "\t";
         cout << setw(2) << setfill('0') << s[j].hour << ":" << setw(2) << setfill('0') << s[j].min << ":" << setw(2) << setfill('0') << s[j].sec << endl;
     }
@@ -101,11 +107,11 @@ int showranklist() {
     printrankhelp();
     int y = 2 * (i - 1) + 7;
     setpos(40, y);
-    cout << "[ ]É¾³ıÈ«²¿¼ÇÂ¼";
+    cout << "[ ]åˆ é™¤å…¨éƒ¨è®°å½•";
     setpos(48, y + 4);
-    cout << "[ ]ÊÇ";
+    cout << "[ ]æ˜¯";
     setpos(48, y + 6);
-    cout << "[ ]·ñ";
+    cout << "[ ]å¦";
     setpos(48, y + 8);
     int choice;
     int sure;
@@ -127,7 +133,7 @@ int showranklist() {
             }
             else if (sure == 1) {
                 if (choice == i) {
-                    remove("data.txt");//É¾³ı¼ÇÂ¼
+                    remove(filename);//åˆ é™¤è®°å½•
                     return 0;
                 }
                 else return s[choice - 1].score;
@@ -213,10 +219,10 @@ void printconsolehelp() {
     setpos(col + 10, 5);
     cout << "Help" << endl;
     setpos(col + 10, 6);
-    cout << "Ê¹ÓÃw,s½øĞĞÑ¡Ôñ";
+    cout << "ä½¿ç”¨w,sè¿›è¡Œé€‰æ‹©";
     setpos(0, row + 1);
     setpos(col + 10, 7);
-    cout << "¿Õ¸ñ½øĞĞÈ·¶¨";
+    cout << "ç©ºæ ¼è¿›è¡Œç¡®å®š";
     return;
 }
 
@@ -225,13 +231,13 @@ void printrankhelp() {
     setpos(10, 3);
     cout << "Help";
     setpos(5, 4);
-    cout << "w,a½øĞĞÑ¡Ôñ";
+    cout << "w,aè¿›è¡Œé€‰æ‹©";
     setpos(5, 5);
-    cout << "Ñ¡ÔñÄãµÄÄ¿±ê";
+    cout << "é€‰æ‹©ä½ çš„ç›®æ ‡";
     setpos(5, 6);
-    cout << "tabÔÚÑ¡Ôñ¿òÓëÈ·ÈÏ¿ò½øĞĞÌø×ª";
+    cout << "tabåœ¨é€‰æ‹©æ¡†ä¸ç¡®è®¤æ¡†è¿›è¡Œè·³è½¬";
     setpos(5, 7);
-    cout << "¿Õ¸ñÈ·ÈÏ";
+    cout << "ç©ºæ ¼ç¡®è®¤";
     return;
 }
 
@@ -243,7 +249,7 @@ int selecttarget(int max) {
     while (true) {
         int choice1 = choice;
         op = getch();
-        if (op == ' ' || op == 9) {//tab¶ÔÓ¦µÄasciiÎª9
+        if (op == ' ' || op == 9) {//tabå¯¹åº”çš„asciiä¸º9
             break;
         }
         if (op >= 65 && op <= 90) {
@@ -279,7 +285,7 @@ int selectchoice(int y) {
         int choice1 = choice;
         op = getch();
         if (op == 9) {
-            return -1;//-1ÌØÊâÖµ±íÊ¾ÌØÊâ×´Ì¬
+            return -1;//-1ç‰¹æ®Šå€¼è¡¨ç¤ºç‰¹æ®ŠçŠ¶æ€
         }
         if (op == ' ') {
             break;

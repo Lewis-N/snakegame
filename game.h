@@ -5,7 +5,6 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
-const int sleept = 20;/*Ëæ»úË¢ĞÂÊ±¼ä¼ä¸ô*/
 
 typedef struct Linklist {
     int x;
@@ -24,32 +23,33 @@ snake* init();
 
 void move(snake* head, char op, int count);
 
-void printmap();/*´òÓ¡µØÍ¼*/
+void printmap();/*æ‰“å°åœ°å›¾*/
 
 void cleanhelp();
 
-void printhelp();/*´òÓ¡°ïÖú*/
+void printhelp();/*æ‰“å°å¸®åŠ©*/
 
-void printsnake(snake* head, int diff);/*´òÓ¡ÉßµÄÉíÌå*/
+void printsnake(snake* head, int diff);/*æ‰“å°è›‡çš„èº«ä½“*/
 
-food generatefood(snake* head);/*Éú³ÉÊ³Îï*/
+food generatefood(snake* head);/*ç”Ÿæˆé£Ÿç‰©*/
 
 void gamestart(snake*, int);
 
-bool eat(snake*, food);/*ÊÇ·ñ³Ôµ½*/
+bool eat(snake*, food);/*æ˜¯å¦åƒåˆ°*/
 
-bool Isfail(snake*);/*ÅĞÊ¤¸º*/
+bool Isfail(snake*);/*åˆ¤èƒœè´Ÿ*/
 
-void printfail(snake*, int);/*´òÓ¡Ê§°Ü½çÃæ*/
+void printfail(snake*, int);/*æ‰“å°å¤±è´¥ç•Œé¢*/
 
-void quitgame(snake*);/*½áÊøÓÎÏ·*/
+void quitgame(snake*);/*ç»“æŸæ¸¸æˆ*/
 
-void addsnake(snake* head);/*Ôö³¤ÉßÉíÌå*/
+void addsnake(snake* head);/*å¢é•¿è›‡èº«ä½“*/
 
-int accelerate(int diff); /*±äËÙ*/
+int accelerate(int diff); /*å˜é€Ÿ*/
 
-int pausegame();/*ÔİÍ£ÓÎÏ·*/
+int pausegame();/*æš‚åœæ¸¸æˆ*/
 
-void autoacc(int, int&);/*×Ô¶¯¼ÓËÙ*/
+void autoacc(int, int&);/*è‡ªåŠ¨åŠ é€Ÿ*/
 
+void mutliplay_init();
 #endif

@@ -4,11 +4,14 @@
 
 #ifndef CONSOLE_H
 #define CONSOLE_H
-
 const int row = 23;
 const int col = 51;
 
 const int maxlen = 1000;
+
+const int maxsize = 100;
+
+#define filename "data.txt"
 
 typedef struct data {
     int score;
@@ -18,6 +21,7 @@ typedef struct data {
     int hour;
     int min;
     int sec;
+    char username[maxsize];
 }data;
 
 
