@@ -43,10 +43,26 @@ snake* init() {
     return head;
 }
 
-void move(snake* head, char op, int count) {
+void specialmove(int& x, int& y) {
+    if (x == 0) {
+        x = col - 2;
+    }
+    else if (x == col-1) {
+        x = 1;
+    }
+    if (y == 0) {
+        y = row - 2;
+    }
+    else if (y == row-1) {
+        y = 1;
+    }
+    return;
+}
+
+void move(snake* head,char op,int count,bool wall) {
     snake* ptr = head->next;
     if (ptr->next != NULL) {
-        move(ptr, op, count + 1);/*递归来实现找到蛇尾节点*/
+        move(ptr,op,count+1,wall);/*递归来实现找到蛇尾节点*/
     }
     ptr->x = head->x;
     ptr->y = head->y;
@@ -65,9 +81,12 @@ void move(snake* head, char op, int count) {
             head->y++;
             break;
         }
+        if (!wall) {
+            specialmove(head->x, head->y);
+        }
         head->op = op;
     }
-
+    
 }
 
 void printmap() {
@@ -104,7 +123,7 @@ void cleanhelp() {
     return;
 }
 
-void printhelp() {
+void printhelp(struct config s) {
     setpos(col + 10, 5);
     cout << "Help" << endl;
     setpos(col + 10, 6);
@@ -116,6 +135,26 @@ void printhelp() {
     cout << "金色食物随机生成，其有双倍加分";
     setpos(col + 10, 9);
     cout << "暂停时按下q来退出并保存游戏";
+    setpos(col + 10, 10);
+    cout << "自动加速";
+    if (s.acc == true) {
+        setpos(col + 19, 10);
+        cout << "开";
+    }
+    else if (s.acc == false) {
+        setpos(col + 19, 10);
+        cout << "关";
+    }
+    setpos(col + 10, 11);
+    cout << "墙壁碰撞";
+    if (s.wall == true) {
+        setpos(col + 19, 11);
+        cout << "开";
+    }
+    else if (s.wall == false) {
+        setpos(col + 19, 11);
+        cout << "关";
+    }
     return;
 }
 
@@ -188,15 +227,15 @@ bool eat(snake* head, food f) {
         return false;
 }
 
-void gamestart(snake* head, int target) {
+void gamestart(snake* head,int target,config s) {
     int score = 0;
     int diff = 0;/*默认难度*/
     printmap();
-    printhelp();
-    setpos(col + 10, 10);
+    printhelp(s);
+    setpos(col + 10, 12);
     cout << "当前得分:" << score;
     if (target) {
-        setpos(col + 10, 11);
+        setpos(col + 10, 13);
         cout << "目标分数:" << target;
     }
     char op1;
@@ -204,7 +243,7 @@ void gamestart(snake* head, int target) {
     bool flag = false;
     bool start = false;
     f = generatefood(head);
-    while (!Isfail(head)) {
+    while (((!Isfail(head))&&(!hitwall(head,s.wall)))) {
         if (!start) {
             op1 = head->op;
             start = true;
@@ -242,7 +281,7 @@ void gamestart(snake* head, int target) {
             op1 = head->op;
         }
         else if (op1 == 'w' || op1 == 'a' || op1 == 's' || op1 == 'd') {
-            move(head, op1, 0);
+            move(head, op1, 0,s.wall);
         }
         else {
             op1 = head->op;
@@ -254,15 +293,16 @@ void gamestart(snake* head, int target) {
             if (f.quality == 'y') { score += 2 * diff * scoreup; }
             else { score += diff * scoreup; }
             f = generatefood(head);
-            setpos(col + 10, 10);
+            setpos(col + 10, 12);
             cout << "当前得分:" << score;
         }
-        autoacc(score, diff);
+        if(s.acc)
+            autoacc(score, diff);
     }
     if (score) {
         savescore(score);
     }
-    printfail(head, target);
+    printfail(head,target,s);
     return;
 }
 
@@ -280,9 +320,6 @@ void quitgame(snake* head) {
 
 bool Isfail(snake* head) {
     snake* ptr = head->next;
-    if (head->x == 0 || head->x == col - 1 || head->y == 0 || head->y == row - 1) {
-        return true;
-    }
     while (ptr->next != NULL) {
         if (ptr->x == head->x && ptr->y == head->y) {
             return true;
@@ -318,11 +355,11 @@ int pausegame() {
     }
 }
 
-void printfail(snake* head, int target) {
+void printfail(snake* head,int target,config s) {
     cleanhelp();
     setpos(col / 2 - 10, row / 2);
     cout << "你失败了,是否再来一局";
-    setpos(col / 2 - 5, row / 2 + 2);
+    setpos(col / 2 - 5, row / 2+2);
     cout << "[ ]再来一把";
     setpos(col / 2 - 5, row / 2 + 3);
     cout << "[ ]不了不了";
@@ -330,7 +367,7 @@ void printfail(snake* head, int target) {
     if (op == 'y') {
         quitgame(head);
         head = init();
-        gamestart(head, target);
+        gamestart(head,target,s);
     }
     else if (op == 'n') {
         quitgame(head);
@@ -340,5 +377,19 @@ void printfail(snake* head, int target) {
 void autoacc(int score, int& diff) {
     if (score >= 5 * diff * scoreup) {
         diff++;
+    }
+}
+
+bool hitwall(snake* head, bool wall) {
+    if (wall == false) {
+        return false;/*关闭墙模式*/
+    }
+    else {
+        if (head->x == 0 || head->x == col - 1 || head->y == 0 || head->y == row - 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

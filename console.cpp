@@ -28,12 +28,12 @@ void setcolor(char color) {//设置打印颜色，用于打印不同颜色的食
 }
 
 
-bool cmp(struct data s1, struct data s2) {
+bool cmp(struct data s1,struct data s2) {
     return s1.score >= s2.score;
 }
 
 void savescore(int score1) {
-    struct data* s = (struct data*)malloc(sizeof(struct data));//这里用malloc是为了下面能一次性写入一整个结构体
+    struct data *s=(struct data*)malloc(sizeof(struct data));//这里用malloc是为了下面能一次性写入一整个结构体
     s->score = score1;
     setpos(col / 2 - 10, row / 2);
     cout << "请输入用户名:";
@@ -68,6 +68,8 @@ int menu() {
     setpos(col / 2 - 5, row / 2 - 1);
     cout << "[ ]查看排行榜" << endl;
     setpos(col / 2 - 5, row / 2);
+    cout << "[ ]设置" << endl;
+    setpos(col / 2 - 5, row / 2+1);
     cout << "[ ]退出" << endl;
     return select();
 }
@@ -99,8 +101,8 @@ int showranklist() {
     cout << "排行榜";
     for (int j = 0; j < i - 1; j++) {
         setpos(40, j * 2 + 7);
-        cout << "[ ]" << s[j].username << "\t" << s[j].score << "\t";
-        cout << s[j].year + 1900 << "/" << setw(2) << setfill('0') << s[j].month + 1 << "/" << setw(2) << setfill('0') << s[j].day << "\t";
+        cout << "[ ]" <<s[j].username<<"\t"<< s[j].score << "\t";
+        cout << s[j].year + 1900 <<"/"<< setw(2) << setfill('0') << s[j].month + 1 << "/" << setw(2) << setfill('0') << s[j].day << "\t";
         cout << setw(2) << setfill('0') << s[j].hour << ":" << setw(2) << setfill('0') << s[j].min << ":" << setw(2) << setfill('0') << s[j].sec << endl;
     }
     fclose(p);
@@ -144,14 +146,14 @@ int showranklist() {
 
 char selectfail() {
     printconsolehelp();
-    int x = col / 2 - 4;
-    int y = row / 2 + 1;
+    int x = col / 2 - 4; 
+    int y = row / 2+1;
     int choice = 0;
     char op;
     while (true) {
         int choice1 = choice;
         op = getch();
-        if (op == ' ') {
+        if (op == ' '&&choice!=0) {
             break;
         }
         if (op >= 65 && op <= 90) {
@@ -187,7 +189,7 @@ int select() {
     while (true) {
         int choice1 = choice;
         op = getch();
-        if (op == ' ') {
+        if (op == ' '&&choice!=0) {
             break;
         }
         if (op >= 65 && op <= 90) {
@@ -201,11 +203,11 @@ int select() {
             choice++;
             break;
         }
-        if (choice > 3) {
+        if (choice > 4) {
             choice = 1;
         }
         if (choice <= 0) {
-            choice = 3;
+            choice = 4;
         }
         setpos(x, y + choice1);
         cout << " ";
@@ -231,13 +233,11 @@ void printrankhelp() {
     setpos(10, 3);
     cout << "Help";
     setpos(5, 4);
-    cout << "w,a进行选择";
+    cout<<"w,s进行选择"; 
     setpos(5, 5);
     cout << "选择你的目标";
     setpos(5, 6);
-    cout << "tab在选择框与确认框进行跳转";
-    setpos(5, 7);
-    cout << "空格确认";
+    cout << "空格确认"; 
     return;
 }
 
@@ -249,7 +249,7 @@ int selecttarget(int max) {
     while (true) {
         int choice1 = choice;
         op = getch();
-        if (op == ' ' || op == 9) {//tab对应的ascii为9
+        if ((op == ' '||op==9)&&choice!=0) {//tab对应的ascii为9
             break;
         }
         if (op >= 65 && op <= 90) {
@@ -269,9 +269,9 @@ int selecttarget(int max) {
         if (choice <= 0) {
             choice = max;
         }
-        setpos(x, y + 2 * choice1);
+        setpos(x, y + 2*choice1);
         cout << " ";
-        setpos(x, y + 2 * choice);
+        setpos(x, y + 2*choice);
         cout << "*";
     }
     return choice;
@@ -287,7 +287,7 @@ int selectchoice(int y) {
         if (op == 9) {
             return -1;//-1特殊值表示特殊状态
         }
-        if (op == ' ') {
+        if (op == ' '&&choice!=0) {
             break;
         }
         if (op >= 65 && op <= 90) {
@@ -312,5 +312,119 @@ int selectchoice(int y) {
         setpos(x, y + 2 * choice);
         cout << "*";
     }
-    return choice == 1 ? 1 : 2;
+    return choice==1?1:2;
+}
+
+config settings() {
+    system("cls");
+    settingshelp();
+    setpos(52, 3);
+    cout << "设置";
+    setpos(32, 7);
+    cout << "自动加速";
+    setpos(50, 7);
+    cout << "[ ]是"<<"    "<<"[ ]否";
+    setpos(32, 9);
+    cout << "墙体碰撞";
+    setpos(50, 9);
+    cout << "[ ]是" << "    " << "[ ]否";
+    setpos(32, 11);
+    cout << "保存并返回";
+    setpos(50, 11);
+    cout << "[ ]是" << "    " << "[ ]否";
+    int c1= choicesetting(7);
+    int c2= choicesetting(9);
+    int c3= choicesetting(11);
+    if (c3 == 1) {
+        struct config s=configini(c1, c2);
+        saveconfig(s);
+        return s;
+    }
+    else {
+        return readconfig();
+    }
+}
+
+int choicesetting(int y) {
+    int choice = 0;
+    int x = 51;
+    char op;
+    while (true) {
+        int choice1 = choice;
+        op = getch();
+        if (op == ' '&&choice!=0) {
+            break;
+        }
+        if (op >= 65 && op <= 90) {
+            op ^= 32;
+        }
+        switch (op) {
+        case'a':
+            choice--;
+            break;
+        case'd':
+            choice++;
+            break;
+        }
+        if (choice > 2) {
+            choice = 1;
+        }
+        if (choice <= 0) {
+            choice = 2;
+        }
+        setpos(x + 9 * (choice1-1), y);
+        cout << " ";
+        setpos(x + 9 * (choice - 1), y);
+        cout << "*";
+    }
+    return choice;
+}
+
+void settingshelp() {
+    setpos(15, 3);
+    cout << "Help";
+    setpos(10, 4);
+    cout << "a,d进行选择";
+    setpos(10, 5);
+    cout << "空格确认";
+    return;
+}
+
+config configini(int choice1,int choice2) {
+    config s;
+    switch (choice1) {
+    case 1:
+        s.acc = true;
+        break;
+    case 2:
+        s.acc = false;
+        break;
+    }
+    switch (choice2) {
+    case 1:
+        s.wall = true;
+        break;
+    case 2:
+        s.wall = false;
+        break;
+    }
+    return s;
+}
+
+config readconfig() {
+    FILE* p = fopen(configfile, "rb");
+    if (p == NULL) {
+        return configini();
+    }
+    else {
+        config s;
+        fread(&s, sizeof(struct config), 1, p);
+        return s;
+    }
+}
+
+void saveconfig(struct config s) {
+    FILE* p = fopen(configfile, "wb");
+    fwrite(&s, sizeof(struct config), 1, p);
+    return;
 }

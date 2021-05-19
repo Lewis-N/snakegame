@@ -10,16 +10,20 @@
 using namespace std;
 
 int main() {
-    int target = 0;
+    int target=0;
+    struct config s = readconfig();
     int choice = menu();
-    while (choice != 3) {
+    while (choice != 4) {
         if (choice == 1) {
             system("cls");
             snake* head = init();
-            gamestart(head, target);
+            gamestart(head,target,s);
         }
         else if (choice == 2) {
-            target = showranklist();
+            target=showranklist();
+        }
+        else if (choice == 3) {
+            s=settings();
         }
         choice = menu();
     }

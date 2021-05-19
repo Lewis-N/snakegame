@@ -12,8 +12,14 @@ const int maxlen = 1000;
 const int maxsize = 100;
 
 #define filename "data.txt"
+#define configfile "config.txt"
 
-typedef struct data {
+typedef struct config {
+    bool acc;
+    bool wall;
+}config;
+
+typedef struct data{
     int score;
     int year;
     int month;
@@ -48,5 +54,17 @@ void printrankhelp();
 int selecttarget(int max);
 
 int selectchoice(int posy);
+
+config settings();
+
+int choicesetting(int y);
+
+config configini(int choice1 = 0, int choice2 = 0);
+
+config readconfig();
+
+void settingshelp();
+
+void saveconfig(config);
 
 #endif
