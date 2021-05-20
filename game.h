@@ -51,10 +51,10 @@ int accelerate(int diff); /*变速*/
 
 int pausegame();/*暂停游戏*/
 
-void autoacc(int, int&);/*自动加速*/
+void autoacc(int, int&,bool);/*自动加速*/
 
 void specialmove(int& x, int& y);
 
-void fixwall();
+bool specialjudeg(snake*,bool);
 
 #endif

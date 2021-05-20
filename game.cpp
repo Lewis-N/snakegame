@@ -229,10 +229,11 @@ bool eat(snake* head, food f) {
 
 void gamestart(snake* head,int target,config s) {
     int score = 0;
-    int diff = 0;/*默认难度*/
+    int diff = 1;/*默认难度*/
     printmap();
     printhelp(s);
     setpos(col + 10, 12);
+    bool manual = false;
     cout << "当前得分:" << score;
     if (target) {
         setpos(col + 10, 13);
@@ -242,11 +243,15 @@ void gamestart(snake* head,int target,config s) {
     food f, hf;
     bool flag = false;
     bool start = false;
+    int count = 0;
     f = generatefood(head);
     while (((!Isfail(head))&&(!hitwall(head,s.wall)))) {
         if (!start) {
             op1 = head->op;
             start = true;
+        }
+        if (count == 20 && manual) {
+            manual = false;
         }
         printsnake(head, diff);
         if (kbhit()) {
@@ -270,10 +275,12 @@ void gamestart(snake* head,int target,config s) {
                 if (op1 == '+') {
                     diff++;
                     op1 = head->op;
+                    manual = true;
                 }
                 else if (op1 == '-') {
                     diff--;
                     op1 = head->op;
+                    manual = true;
                 }
             }
         }
@@ -297,7 +304,8 @@ void gamestart(snake* head,int target,config s) {
             cout << "当前得分:" << score;
         }
         if(s.acc)
-            autoacc(score, diff);
+            autoacc(score, diff,manual);
+        count++;
     }
     if (score) {
         savescore(score);
@@ -374,8 +382,8 @@ void printfail(snake* head,int target,config s) {
     }
 }
 
-void autoacc(int score, int& diff) {
-    if (score >= 5 * diff * scoreup) {
+void autoacc(int score, int& diff,bool flag) {
+    if (score >= 5 * diff * scoreup&&flag==false) {
         diff++;
     }
 }
@@ -391,5 +399,11 @@ bool hitwall(snake* head, bool wall) {
         else {
             return false;
         }
+    }
+}
+
+bool specialjudeg(snake* head,bool wall) {
+    if (wall == true) {
+
     }
 }
